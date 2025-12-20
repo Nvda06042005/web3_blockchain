@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 import { 
   ArrowLeft, 
-  Clock, 
-  Users, 
   Target, 
   Share2, 
   ExternalLink,

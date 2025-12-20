@@ -14,7 +14,7 @@ interface CreateProjectModalProps {
 export function CreateProjectModal({ isOpen, onClose, onSuccess }: CreateProjectModalProps) {
   const account = useCurrentAccount();
   const { createProject, isPending } = useContractCalls();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   
   const [form, setForm] = useState<CreateProjectForm>({
     name: "",

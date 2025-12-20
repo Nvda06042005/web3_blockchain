@@ -10,7 +10,7 @@ interface FeaturedProjectCardProps {
 }
 
 export function FeaturedProjectCard({ campaign }: FeaturedProjectCardProps) {
-  const { t } = useLanguage();
+  useLanguage(); // Keep context connection
   const [isFavorite, setIsFavorite] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   

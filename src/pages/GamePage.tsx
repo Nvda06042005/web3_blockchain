@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 import { ConnectButton } from "@mysten/dapp-kit";
 import { useGameCalls, type GameState, useDocumentTitle } from "../hooks";
-import { GAME_PACKAGE_ID, MODULES, formatSUI, MIST_PER_SUI } from "../constants";
+import { GAME_PACKAGE_ID, MODULES, formatSUI } from "../constants";
 import { useLanguage } from "../contexts";
 
 export function GamePage() {
   const account = useCurrentAccount();
-  const { t } = useLanguage();
+  useLanguage(); // Keep context connection
   const [gameStateId, setGameStateId] = useState<string | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [loading, setLoading] = useState(false);
@@ -48,9 +48,10 @@ export function GamePage() {
 
   // Helper function to check if contract is deployed
   const isContractDeployed = () => {
-    return GAME_PACKAGE_ID !== "0x0" && 
-           GAME_PACKAGE_ID !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
-           GAME_PACKAGE_ID.length > 3;
+    const pkgId = GAME_PACKAGE_ID as string;
+    return pkgId !== "0x0" && 
+           pkgId !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
+           pkgId.length > 3;
   };
 
   // Set page title
@@ -107,7 +108,8 @@ export function GamePage() {
     }
 
     // Check if contract is deployed
-    if (GAME_PACKAGE_ID === "0x0" || GAME_PACKAGE_ID === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    const pkgId = GAME_PACKAGE_ID as string;
+    if (pkgId === "0x0" || pkgId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
       setError("Game contract chưa được deploy! Vui lòng deploy smart contract trước khi sử dụng.");
       return;
     }

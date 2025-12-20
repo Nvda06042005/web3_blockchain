@@ -22,7 +22,7 @@ interface CreateCampaignModalProps {
 export function CreateCampaignModal({ isOpen, onClose, onSuccess, projects }: CreateCampaignModalProps) {
   const account = useCurrentAccount();
   const { createCampaign, isPending } = useContractCalls();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   
   const [form, setForm] = useState<CreateCampaignForm>({
     project_id: "",
