@@ -1,0 +1,2 @@
+export { PigLifeGame } from './PigLifeGame';
+
