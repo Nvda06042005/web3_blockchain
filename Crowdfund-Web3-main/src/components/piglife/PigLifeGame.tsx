@@ -652,8 +652,8 @@ export function PigLifeGame() {
 
   const isContractDeployed = () => {
     return (
-      GAME_PACKAGE_ID !== "0x0" &&
-      GAME_PACKAGE_ID !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
+      (GAME_PACKAGE_ID as string) !== "0x0" &&
+      (GAME_PACKAGE_ID as string) !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
       GAME_PACKAGE_ID.length > 3
     );
   };
@@ -1453,23 +1453,18 @@ export function PigLifeGame() {
       // This allows user to start playing right away
       const initialState: PigLifeGameState = {
         player: account.address,
-        pigs: 0,
-        trees: 0,
-        wood: 0,
-        simple_houses: 0,
-        modern_houses: 0,
-        coins: 100_000_000, // 0.1 SUI starting balance
-        bricks: 0,
-        last_updated: Date.now(),
-        social_capital: 0,
-        life_token: 0,
-        pig_level: 1,
-        pig_exp: 0,
+        pigs_count: 0,
         seeds: 0,
         trees_count: 0,
         wood_count: 0,
         house_level: 0,
         bricks_count: 0,
+        last_updated: Date.now(),
+        social_capital: 100,
+        life_token: 50,
+        pig_level: 1,
+        pig_exp: 0,
+        sui_balance: 100_000_000,
         streak_days: 0,
         total_posts: 0,
         total_score: 0,
@@ -1477,7 +1472,6 @@ export function PigLifeGame() {
         last_feed_time: 0,
         last_checkin_date: 0,
         created_at: Date.now(),
-        sui_balance: 100_000_000,
       };
       
       console.log("🎮 Setting initial game state:", initialState);
