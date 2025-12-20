@@ -4,14 +4,21 @@ import { Outlet, useLocation } from "react-router-dom";
 export function Layout() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isGamePage = location.pathname === "/game" || location.pathname === "/piglife";
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className={isHomePage ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"}>
+      <main className={
+        isGamePage 
+          ? "" 
+          : isHomePage 
+            ? "" 
+            : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      }>
         <Outlet />
       </main>
-      {!isHomePage && (
+      {!isHomePage && !isGamePage && (
         <footer className="bg-white border-t border-gray-200 py-8 mt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-center">

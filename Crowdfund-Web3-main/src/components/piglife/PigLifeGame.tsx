@@ -1163,7 +1163,8 @@ export function PigLifeGame() {
 
   // Fetch user's game
   // Note: Using pig_farming module until pig_life is deployed
-  const { data: gamesData, refetch: refetchGames } = useSuiClientQuery(
+  // FIX: Allow query even if contract not deployed - will gracefully fail and use local mode
+  const { data: gamesData, refetch: refetchGames, error: gamesQueryError } = useSuiClientQuery(
     "getOwnedObjects",
     {
       owner: account?.address!,
@@ -1176,11 +1177,77 @@ export function PigLifeGame() {
     {
       enabled: !!account?.address && isContractDeployed(),
       retry: false,
+      // Don't throw errors - gracefully fall back to local mode
+      throwOnError: false,
     }
   );
 
+  // Auto-create game state if not exists (for local mode)
+  // This runs after checking blockchain and localStorage
+  useEffect(() => {
+    // Only auto-create if account is connected and no game state exists
+    if (!account?.address) return;
+    
+    // Wait a bit for other useEffects to finish loading
+    const timer = setTimeout(() => {
+      // If gameState is still null after loading attempts, create new game
+      if (!gameState) {
+        const storageKey = `pigLifeProgress_${account.address}_season${seasonNumber}`;
+        const savedData = localStorage.getItem(storageKey);
+        
+        if (!savedData) {
+          // No saved data - auto-create initial game state
+          console.log("🎮 Auto-creating game state for local mode...");
+          const initialState: PigLifeGameState = {
+            player: account.address,
+            pigs_count: 0,
+            seeds: 0,
+            trees_count: 0,
+            wood_count: 0,
+            house_level: 0,
+            bricks_count: 0,
+            last_updated: Date.now(),
+            social_capital: 100, // Start with 100 SC
+            life_token: 50, // Start with 50 LT
+            pig_level: 1,
+            pig_exp: 0,
+            sui_balance: 0,
+            streak_days: 0,
+            total_posts: 0,
+            total_score: 0,
+            is_ceo: false,
+            last_feed_time: 0,
+            last_checkin_date: 0,
+            created_at: Date.now(),
+          };
+          
+          setGameState(initialState);
+          saveProgress(initialState);
+          console.log("✅ Auto-created game state:", initialState);
+          
+          // Update leaderboard
+          setTimeout(() => {
+            if (account) {
+              updatePlayerScore();
+            }
+          }, 100);
+        }
+      }
+    }, 500); // Wait 500ms for other loading to complete
+    
+    return () => clearTimeout(timer);
+  }, [account?.address, seasonNumber]); // Only depend on account and season, not gameState
+
   // Load game state
   useEffect(() => {
+    // Handle query errors gracefully
+    if (gamesQueryError) {
+      console.warn("⚠️ Query error (using local mode):", gamesQueryError);
+      // Don't set error state - just use local mode
+      loadLocalGameState();
+      return;
+    }
+    
     console.log("📦 Games data updated:", gamesData);
     
     if (gamesData?.data && gamesData.data.length > 0) {
@@ -1198,7 +1265,7 @@ export function PigLifeGame() {
       // FIX: Don't clear gameState! Try to load from localStorage
       loadLocalGameState();
     }
-  }, [gamesData]);
+  }, [gamesData, gamesQueryError]);
 
   const loadGameData = async (id: string) => {
     try {
@@ -1576,96 +1643,32 @@ export function PigLifeGame() {
     );
   }
 
-  // Contract not deployed
-  if (!isContractDeployed()) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 p-4">
-        <div className="max-w-3xl mx-auto mt-12">
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <AlertTriangle className="w-8 h-8 text-yellow-500" />
-              <h2 className="text-2xl font-bold text-gray-900">{t("piglife.contractNotDeployed")}</h2>
-            </div>
-            
-            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 mb-6">
-              <p className="text-yellow-800 mb-4">
-                {t("piglife.deployInstructions")}
-              </p>
-              
-              <ol className="list-decimal list-inside space-y-3 text-yellow-900">
-                <li className="font-semibold">
-                  {t("piglife.deployStep1")}
-                  <pre className="mt-2 bg-yellow-100 p-3 rounded-lg text-sm overflow-x-auto">
-                    cd Crowdfund-Web3-main{"\n"}
-                    sui move build{"\n"}
-                    sui client publish --gas-budget 500000000
-                  </pre>
-                </li>
-                
-                <li className="font-semibold mt-4">
-                  {t("piglife.deployStep2")} <code className="bg-yellow-100 px-2 py-1 rounded">src/constants/index.ts</code>
-                </li>
-                
-                <li className="font-semibold mt-4">
-                  {t("piglife.deployStep3")} <span className="text-red-600">{t("piglife.notMainnet")}</span>
-                </li>
-              </ol>
-            </div>
-            
-            <p className="text-gray-600 text-sm">
-              📖 {t("piglife.deployStep4")} <code className="bg-gray-100 px-2 py-1 rounded">PIGLIFE_DEPLOY.md</code>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Contract not deployed - show warning but allow local play
+  // REMOVED: Blocking check that prevented game from running
+  // Game can now run in local mode even without contract
 
-  // No game - show create game
-  if (!gameState) {
+  // No game - show loading or auto-create
+  // FIX: Don't show "Create Game" screen - auto-create game state instead
+  if (!gameState && account?.address) {
+    // Show loading while auto-creating game
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 p-4">
-        <div className="max-w-2xl mx-auto mt-20">
-          <div className="bg-white rounded-2xl shadow-2xl p-12 text-center">
-            <div className="text-8xl mb-6 animate-bounce">🐷</div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t("piglife.welcome")}
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              {t("piglife.subtitle")}
-            </p>
-            
-            {error && (
-              <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 mb-6">
-                <p className="text-yellow-800 mb-3">{error}</p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition-all"
-                >
-                  🔄 {t("piglife.refreshPage")}
-                </button>
-              </div>
-            )}
-            
-            <button
-              onClick={handleCreateGame}
-              disabled={loading || isPending}
-              className="px-12 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold rounded-full hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading || isPending ? (
-                <>
-                  <Loader2 className="w-6 h-6 inline-block animate-spin mr-2" />
-                  {t("game.starting")}
-                </>
-              ) : (
-                t("piglife.startPlaying")
-              )}
-            </button>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 text-center max-w-md w-full">
+          <div className="text-8xl mb-6 animate-bounce">🐷</div>
+          <Loader2 className="w-12 h-12 animate-spin text-purple-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Đang khởi tạo game...
+          </h1>
+          <p className="text-gray-600">
+            Vui lòng đợi trong giây lát
+          </p>
         </div>
       </div>
     );
   }
+  
+  // If still no game state and no account, show connect wallet (already handled above)
+  // This should not be reached if account exists
 
   // Main game UI
   return (
@@ -1710,6 +1713,22 @@ export function PigLifeGame() {
             </div>
           )}
         </div>
+
+        {/* Contract Warning Banner (non-blocking) */}
+        {!isContractDeployed() && (
+          <div className="bg-yellow-500/90 backdrop-blur-sm text-white p-4 rounded-xl mb-6 border-2 border-yellow-400 shadow-lg">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold mb-1">⚠️ Chế độ Local Mode</p>
+                <p className="text-sm opacity-90">
+                  Game đang chạy ở chế độ local. Dữ liệu sẽ được lưu trên trình duyệt. 
+                  Để kết nối blockchain, vui lòng deploy contract và cập nhật GAME_PACKAGE_ID.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error/Notification */}
         {error && (
