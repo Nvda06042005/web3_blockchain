@@ -6,9 +6,20 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind-v4-38B2AC?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel" alt="Vercel" />
+</p>
+
+<p align="center">
+  <a href="https://crowdfund-web3.vercel.app">🌐 Live Demo</a> •
+  <a href="#-getting-started">📖 Getting Started</a> •
+  <a href="#-features">✨ Features</a>
 </p>
 
 A modern, transparent crowdfunding platform built on the **Sui blockchain**. Inspired by Kickstarter's design, CrowdFund enables creators to launch campaigns and receive support through cryptocurrency, with all transactions recorded on-chain for complete transparency.
+
+## 🎮 Demo
+
+**Live Website:** [https://crowdfund-web3.vercel.app](https://crowdfund-web3.vercel.app)
 
 ## ✨ Features
 
@@ -25,31 +36,39 @@ A modern, transparent crowdfunding platform built on the **Sui blockchain**. Ins
 - 💳 **Easy Donations** - Donate using SUI cryptocurrency
 - 🎁 **NFT Rewards** - Receive Supporter NFTs as proof of contribution
 - 📜 **Transparent History** - View all public transaction records on-chain
+- 🎲 **Quiz & Lucky Wheel** - Interactive bonus features when donating
 
 ### Platform Features
 - 🔐 **Wallet Integration** - Connect with Sui-compatible wallets
 - 📱 **Responsive Design** - Works on desktop and mobile
 - ⛓️ **On-Chain Transparency** - All transactions recorded on Sui blockchain
 - 💸 **Low Fees** - Only 1.5% total fee (0.75% deposit + 0.75% withdraw)
+- 🌍 **Bilingual Support** - English and Vietnamese languages
+- 🐷 **Pig Farming Game** - Mini-game for earning rewards
 
 ## 🏗️ Architecture
 
 ```
 CrowdFund/
 ├── sources/                    # Move Smart Contracts
-│   ├── crowdfund.move         # Platform module (admin, fees, treasury)
-│   ├── project.move           # Project management
-│   ├── campaign.move          # Campaign logic (donate, withdraw, extend)
-│   └── supporter_nft.move     # NFT rewards for supporters
-├── frontend/                   # React Frontend
-│   ├── src/
-│   │   ├── components/        # UI Components
-│   │   ├── pages/             # Page views
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── types/             # TypeScript types
-│   │   └── constants/         # Contract addresses & config
-│   └── ...
-└── tests/                      # Move unit tests
+│   ├── share.move             # Share/crowdfunding module
+│   ├── pig_farming.move       # Pig Farming game contract
+│   └── pig_life.move          # Pig Life game contract
+├── src/                        # React Frontend
+│   ├── components/            # UI Components
+│   │   ├── campaign/          # Campaign components
+│   │   ├── common/            # Shared components
+│   │   ├── home/              # Homepage components
+│   │   ├── layout/            # Layout components
+│   │   ├── piglife/           # Pig Life game components
+│   │   └── project/           # Project components
+│   ├── pages/                 # Page views
+│   ├── hooks/                 # Custom React hooks
+│   ├── contexts/              # React contexts (Language, etc.)
+│   ├── types/                 # TypeScript types
+│   ├── data/                  # Quiz questions data
+│   └── constants/             # Contract addresses & config
+└── public/                     # Static assets
 ```
 
 ## 🔧 Tech Stack
@@ -82,11 +101,25 @@ CrowdFund/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/crowdfund.git
-cd crowdfund
+git clone https://github.com/MochiKawaiii/Crowdfund-Web3.git
+cd Crowdfund-Web3
 ```
 
-### 2. Deploy Smart Contracts (Optional)
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Run Development Server
+
+```bash
+npm run dev
+```
+
+Open http://localhost:5173 in your browser.
+
+### 4. Deploy Smart Contracts (Optional)
 
 ```bash
 # Build contracts
@@ -95,18 +128,22 @@ sui move build
 # Deploy to testnet
 sui client publish --gas-budget 500000000
 
-# Update PACKAGE_ID and PLATFORM_ID in frontend/src/constants/index.ts
+# Update PACKAGE_ID in src/constants/index.ts
 ```
 
 ### 3. Run Frontend
 
 ```bash
-cd frontend
-npm install
 npm run dev
 ```
 
 Open http://localhost:5173 in your browser.
+
+## 🌐 Deployment
+
+The application is deployed on **Vercel** and automatically deploys on every push to the `main` branch.
+
+**Production URL:** [https://crowdfund-web3.vercel.app](https://crowdfund-web3.vercel.app)
 
 ## 📖 Usage Guide
 
@@ -169,10 +206,14 @@ Open http://localhost:5173 in your browser.
 - [x] Kickstarter-style UI
 - [x] Category filtering
 - [x] Transaction history transparency
+- [x] Bilingual support (English/Vietnamese)
+- [x] Quiz feature for donations
+- [x] Lucky Wheel bonus system
+- [x] Pig Farming mini-game
+- [x] Vercel deployment
+- [x] Share functionality
 - [ ] Walrus Sites integration
-- [ ] Social sharing features
 - [ ] Campaign updates/milestones
-- [ ] Multi-language support
 - [ ] Mainnet deployment
 
 ## 🤝 Contributing
@@ -198,5 +239,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  Built with ❤️ on <strong>Sui Blockchain</strong>
+  Built with ❤️ on <strong>Sui Blockchain</strong> by <a href="https://github.com/MochiKawaiii">MochiKawaiii</a>
 </p>
