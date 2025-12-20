@@ -39,13 +39,24 @@ import { DonateWithQuizModal } from "../campaign/DonateWithQuizModal";
 // Define game state type
 interface PigLifeGameState {
   player: string;
-  pigs: number;
-  trees: number;
-  wood: number;
-  simple_houses: number;
-  modern_houses: number;
-  coins: number;
-  bricks: number;
+  social_capital: number;
+  life_token: number;
+  sui_balance: number;
+  pig_level: number;
+  pig_exp: number;
+  pigs_count: number;
+  seeds: number;
+  trees_count: number;
+  wood_count: number;
+  house_level: number;
+  bricks_count: number;
+  streak_days: number;
+  total_posts: number;
+  total_score: number;
+  is_ceo: boolean;
+  last_feed_time: number;
+  last_checkin_date: number;
+  created_at: number;
   last_updated: number;
 }
 
@@ -551,7 +562,7 @@ export function PigLifeGame() {
     // Update local state
     setInvitations(updatedInvitations);
 
-    showNotification("✉️ Đã gửi lời mời! Đợi 15 phút để mời tiếp.");
+    showNotif("✉️ Đã gửi lời mời! Đợi 15 phút để mời tiếp.");
   };
 
   // NEW: Accept invitation
@@ -583,7 +594,7 @@ export function PigLifeGame() {
       localStorage.setItem(inviterGameKey, JSON.stringify(inviterState));
     }
 
-    showNotification(`✅ Đã chấp nhận lời mời! Người mời nhận +${invitation.reward} SC`);
+    showNotif(`✅ Đã chấp nhận lời mời! Người mời nhận +${invitation.reward} SC`);
   };
 
   // NEW: Reject invitation
@@ -604,7 +615,7 @@ export function PigLifeGame() {
     localStorage.setItem("pigLifeInvitations", JSON.stringify(allInvitations));
     setInvitations(allInvitations);
 
-    showNotification("❌ Đã từ chối lời mời");
+    showNotif("❌ Đã từ chối lời mời");
   };
   
   const buySeed = async (gameId: string) => {
@@ -2274,7 +2285,7 @@ export function PigLifeGame() {
                   }
                   // Open invite modal directly (bypass username check)
                   inviteFriend(gameId!).catch((err) => {
-                    showNotification(err.message || "Có lỗi xảy ra");
+                    showNotif(err.message || "Có lỗi xảy ra");
                   });
                 }}
                 disabled={loading || isPending || !account || inviteCooldown !== "Ready!"}

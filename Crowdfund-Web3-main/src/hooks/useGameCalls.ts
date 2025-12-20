@@ -20,8 +20,8 @@ export function useGameCalls() {
 
   // Helper to check if contract is deployed
   const isContractDeployed = () => {
-    return GAME_PACKAGE_ID !== "0x0" && 
-           GAME_PACKAGE_ID !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
+    return (GAME_PACKAGE_ID as string) !== "0x0" && 
+           (GAME_PACKAGE_ID as string) !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
            GAME_PACKAGE_ID.length > 3;
   };
 
